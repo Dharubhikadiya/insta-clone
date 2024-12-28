@@ -1,14 +1,56 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../img/logo.png";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
 
+  const notifyA = (message) => toast.error(message);
+  const notifyB = (message) => toast.success(message);
+
+  const validateFields = () => {
+    const nameRegex = /^[a-zA-Z\s]{3,}$/; // At least 3 characters, letters and spaces only
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Valid email format
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // At least 8 characters, including 1 uppercase, 1 lowercase, 1 number, and 1 special character
+
+    if (!name || !nameRegex.test(name)) {
+      notifyA(
+        "Name must be at least 3 characters and contain only letters and spaces."
+      );
+      return false;
+    }
+
+    if (!email || !emailRegex.test(email)) {
+      notifyA("Please enter a valid email address.");
+      return false;
+    }
+
+    if (!username) {
+      notifyA("Please enter a username.");
+      return false;
+    }
+
+    if (!password || !passwordRegex.test(password)) {
+      notifyA(
+        "Password must be at least 8 characters, include 1 uppercase, 1 lowercase, 1 number, and 1 special character."
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   const handlesubmit = () => {
+    if (!validateFields()) {
+      return;
+    }
+
     fetch("http://localhost:5000/signup", {
       method: "POST",
       headers: {
@@ -23,7 +65,12 @@ const SignUp = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        if (data.error) {
+          notifyA(data.error);
+        } else {
+          notifyB(data.message);
+          navigate("/signin");
+        }
       })
       .catch((err) => console.error("Error:", err));
   };
