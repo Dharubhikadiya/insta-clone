@@ -4,11 +4,12 @@ import { FaRegComment } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
 import { BsSave } from "react-icons/bs";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div>
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4 m-4">
         {/* Instagram Post Card */}
         <div className="bg-white max-w-[468px] w-full rounded shadow">
           {/* Header */}
@@ -24,7 +25,7 @@ const Home = () => {
               </div>
               {/* Username and Location */}
               <div>
-                <a className="text-sm font-semibold">richandroyalsalon</a>
+                <Link className="text-sm font-semibold">richandroyalsalon</Link>
                 <div className="text-xs text-gray-500 text-left">Surat</div>
               </div>
             </div>
@@ -35,7 +36,7 @@ const Home = () => {
           </div>
 
           {/* Main Image */}
-          <div className="relative w-full aspect-[4/5]">
+          <div className="relative w-full aspect-[5/5]">
             <img
               src="https://rukminim2.flixcart.com/image/850/1000/k7gikcw0/poster/f/h/7/medium-nature-wall-poster-butterfly-on-the-flower-high-original-imafpzxg8hk5ggsj.jpeg?q=90&crop=false"
               alt="A person wearing a pink blouse and floral saree with braided hairstyle"
@@ -76,6 +77,17 @@ const Home = () => {
               <p className="text-sm p-0 m-0 text-left">
                 A little bit of volume, a lot of personality{" "}
               </p>
+            </div>
+
+            {/* comment section */}
+            <div className="mt-4 mb-2 relative">
+              <div className="absolute top-1.5 left-2 text-xl">☺️</div>
+              <input
+                type="text"
+                placeholder="Add a comment"
+                className="border w-full p-2 rounded-xl ps-12"
+              ></input>
+              <Link className="absolute right-3 top-2 font-semibold">Post</Link>
             </div>
           </div>
         </div>

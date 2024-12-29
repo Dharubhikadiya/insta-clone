@@ -97,12 +97,9 @@ const SignIn = () => {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a
-                    href="forgotpassword"
-                    className="font-semibold text-[#0095f6]"
-                  >
+                  <Link className="font-semibold text-[#0095f6]">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="mt-2">

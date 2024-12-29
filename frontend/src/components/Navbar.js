@@ -13,21 +13,35 @@ export default function Navbar() {
           <div className="flex ml-4 items-center">
             <ul className="flex gap-12">
               <li className="text-lg">
-                <Link to="signup" className="text-gray-600 hover:text-gray-800">
+                <Link
+                  to="/signup"
+                  className="text-gray-600 hover:text-gray-800"
+                >
                   SignUp
                 </Link>
               </li>
               <li className="text-lg">
-                <Link to="signin" className="text-gray-600 hover:text-gray-800">
+                <Link
+                  to="/signin"
+                  className="text-gray-600 hover:text-gray-800"
+                >
                   SignIn
                 </Link>
               </li>
               <li className="text-lg">
                 <Link
-                  to="profile"
+                  to="/profile"
                   className="text-gray-600 hover:text-gray-800"
                 >
                   Profile
+                </Link>
+              </li>
+              <li className="text-lg">
+                <Link
+                  to="/createpost"
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Create Post
                 </Link>
               </li>
             </ul>
