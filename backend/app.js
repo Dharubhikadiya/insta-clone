@@ -15,10 +15,11 @@ app.use(cors());
 
 // Models
 require("./models/model");
+require("./models/post");
 
 // Routes
 app.use(require("./routes/auth"));
-
+app.use(require("./routes/createpost"));
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
