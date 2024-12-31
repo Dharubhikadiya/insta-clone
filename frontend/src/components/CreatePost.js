@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreatePost = () => {
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
 
+  const navigate = useNavigate();
+
+  const notifyA = (message) => toast.error(message);
+  const notifyB = (message) => toast.success(message);
+
   const postDetails = () => {
-    console.log(body, image);
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", "insta-clone");
@@ -20,19 +26,6 @@ const CreatePost = () => {
       .catch((error) => console.log(error));
 
     // saving image in mongodb
-    fetch("http://localhost:5000/createpost", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        body,
-        imageUrl: url,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
   };
 
   const loadfile = (event) => {
@@ -42,6 +35,34 @@ const CreatePost = () => {
       URL.revokeObjectURL(output.src); // free memory
     };
   };
+
+  useEffect(() => {
+    if (url) {
+      fetch("http://localhost:5000/createpost", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "bearer " + localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({
+          body,
+          pic: url,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            notifyA(data.error);
+          } else {
+            notifyB("successfully posted", data.message);
+            navigate("/");
+            setBody("");
+            setUrl("");
+          }
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [url, body, navigate]);
 
   return (
     <div

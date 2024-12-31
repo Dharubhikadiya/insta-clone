@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   IoHomeOutline,
   IoSearchOutline,
@@ -14,6 +14,19 @@ import {
 import { Link } from "react-router-dom";
 
 const Profile = () => {
+  const [pic, setPic] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/myposts", {
+      headers: {
+        Authorization: "bearer" + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((result) => setPic(result));
+    console.log(pic);
+  }, []);
+
   return (
     <div
       className="
@@ -123,24 +136,15 @@ const Profile = () => {
             </div>
           ))}
         </div> */}
-        <div className="grid grid-cols-2 gap-1 bg-gray-100 ">
-          <img
-            src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
-            alt="Post 1"
-          />
-          <img
-            src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
-            alt="Post 1"
-          />
-          <img
-            src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
-            alt="Post 1"
-          />
-          <img
-            src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
-            alt="Post 1"
-          />
-        </div>
+        {/* {pic?.map((pic) => {
+          return (
+            <>
+              <div className="grid grid-cols-2 gap-1 bg-gray-100 ">
+                <img src={pic.photo} />
+              </div>
+            </>
+          );
+        })} */}
 
         {/* Bottom Navigation */}
         <nav className="sticky bottom-0 left-0 right-0 flex justify-between p-4 bg-white border-t border-gray-200">
