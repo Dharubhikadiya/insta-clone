@@ -10,7 +10,7 @@ export default function Navbar({ login }) {
     if (login || token) {
       return [
         <>
-          <li className="text-lg">
+          <li key={login.id} className="text-lg">
             <Link to="/profile" className="text-gray-600 hover:text-gray-800">
               Profile
             </Link>
@@ -53,7 +53,9 @@ export default function Navbar({ login }) {
       <nav className="shadow-lg flex justify-center items-center py-1 h-16 w-full">
         <div className="container flex items-center justify-between h-full px-20">
           <div className="flex items-center justify-center">
-            <img src={logo} alt="Logo" className="h-20 mt-1" />
+            <Link to="/">
+              <img src={logo} alt="Logo" className="h-20 mt-1" />
+            </Link>
           </div>
           <div className="flex ml-4 items-center">
             <ul className="flex gap-12">{loginstatus()}</ul>

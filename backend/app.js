@@ -20,6 +20,7 @@ require("./models/post");
 // Routes
 app.use(require("./routes/auth"));
 app.use(require("./routes/createpost"));
+app.use(require("./routes/user"));
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });

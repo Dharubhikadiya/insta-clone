@@ -10,26 +10,17 @@ import {
   IoEllipsisVerticalOutline,
   // IoPersonOutline,
 } from "react-icons/io5";
-
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PostDetail from "./PostDetail";
 
-const Profile = () => {
-  const [pic, setPic] = useState([]);
-  const [show, setShow] = useState(false);
+const UserProfile = () => {
+  const { userid } = useParams();
+
+  const [user, setUser] = useState("");
   const [posts, setPosts] = useState([]);
 
-  const toggleDetails = (posts) => {
-    if (show) {
-      setShow(false);
-    } else {
-      setShow(true);
-      setPosts(posts);
-    }
-  };
-
   useEffect(() => {
-    fetch("http://localhost:5000/myposts", {
+    fetch(`http://localhost:5000/user/${userid}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +28,10 @@ const Profile = () => {
       },
     })
       .then((res) => res.json())
-      .then((result) => setPic(result));
+      .then((result) => {
+        setUser(result.user);
+        setPosts(result.posts);
+      });
   }, []);
 
   return (
@@ -50,7 +44,7 @@ const Profile = () => {
         <header className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <Link href="/" className="text-xl font-semibold">
-              {JSON.parse(localStorage.getItem("user")).name}
+              {user.name}
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -71,7 +65,7 @@ const Profile = () => {
             </div>
             <div className="w-4/5 flex items-center justify-between text-center ps-6">
               <div>
-                <div className="font-semibold">4</div>
+                <div className="font-semibold">{posts.length}</div>
                 <div className="text-sm text-gray-600">posts</div>
               </div>
               <div>
@@ -98,33 +92,8 @@ const Profile = () => {
             >
               Message
             </button>
-            {/* <button
-              variant="outline"
-              size="icon"
-              className="bg-white border-gray-300 hover:bg-gray-100"
-            >
-              <IoPersonOutline className="h-4 w-4" />
-            </button> */}
           </div>
         </section>
-
-        {/* Stories Highlights */}
-        {/* <section className="p-4 border-b border-gray-200">
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border border-gray-300 flex items-center justify-center mb-1">
-                <image
-                  src="/placeholder.svg"
-                  alt="Story highlight"
-                  width={56}
-                  height={56}
-                  className="rounded-full"
-                />
-              </div>
-              <span className="text-xs">Navratri 2k24...</span>
-            </div>
-          </div>
-        </section> */}
 
         {/* Gallery Toggle */}
         <div className="flex justify-center border-b border-gray-200">
@@ -136,37 +105,14 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Photo Grid */}
-        {/* <div className="grid grid-cols-2 gap-0.5 bg-gray-100">
-          {[1, 2, 3, 4].map((index) => (
-            <div key={index} className="aspect-square relative">
-              <image
-                src={`https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww`}
-                alt={`Post ${index}`}
-                fill
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div> */}
-        {/* {pic?.map((pic) => {
-          return (
-            <>
-              <div className="grid grid-cols-2 gap-1 bg-gray-100">
-                <img src={pic.photo} />
-              </div>
-            </>
-          );
-        })} */}
-
         <div className="grid grid-cols-3 gap-1 bg-gray-100 ">
-          {pic?.map((pic) => {
+          {posts?.map((pic) => {
             return (
               <>
                 <img
-                  onClick={() => toggleDetails(pic)}
-                  key={pic._id}
-                  src={pic.photo}
+                  //   onClick={() => toggleDetails(pic)}
+                  key={pic?._id}
+                  src={pic?.photo}
                   className="w-full h-40 object-cover"
                 />
               </>
@@ -189,9 +135,9 @@ const Profile = () => {
           />
         </nav>
       </div>
-      {show && <PostDetail items={posts} toggleDetails={toggleDetails} />}
+      {/* {show && <PostDetail items={posts} toggleDetails={toggleDetails} />} */}
     </div>
   );
 };
 
-export default Profile;
+export default UserProfile;
