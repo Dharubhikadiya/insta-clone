@@ -23,6 +23,14 @@ export default function Navbar({ login }) {
               Create Post
             </Link>
           </li>
+          <li className="text-lg">
+            <Link
+              to="/myfollowingpost"
+              className="text-gray-600 hover:text-gray-800"
+            >
+              My Following
+            </Link>
+          </li>
           <li className="text-lg" onClick={() => setmodalOpen(true)}>
             <Link to={""} className="text-gray-600 hover:text-gray-800">
               Log out
@@ -58,7 +66,7 @@ export default function Navbar({ login }) {
             </Link>
           </div>
           <div className="flex ml-4 items-center">
-            <ul className="flex gap-12">{loginstatus()}</ul>
+            <ul className="flex gap-8">{loginstatus()}</ul>
           </div>
         </div>
       </nav>

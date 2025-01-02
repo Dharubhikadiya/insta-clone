@@ -6,8 +6,9 @@ const POST = mongoose.model("POST");
 
 router.get("/allposts", requireLogin, (req, res) => {
   POST.find()
-    .populate("postedBy", "_id name")
+    .populate("postedBy", "_id name photo")
     .populate("comments.postedBy", "_id name")
+    .sort("-createdAt")
     .then((posts) => {
       res.json(posts);
     })
@@ -37,6 +38,7 @@ router.get("/myposts", requireLogin, (req, res) => {
   POST.find({ postedBy: req.user._id })
     .populate("postedBy", "_id name")
     .populate("comments.postedBy", "_id name")
+    .sort("-createdAt")
     .then((myposts) => {
       res.json(myposts);
     })
@@ -49,6 +51,7 @@ router.put("/like", requireLogin, (req, res) => {
     { $push: { likes: req.user._id } },
     { new: true }
   )
+    .populate("postedBy", "_id name photo")
     .then((result) => {
       res.json(result);
     })
@@ -61,6 +64,7 @@ router.put("/unlike", requireLogin, (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
+    .populate("postedBy", "_id name photo")
     .then((result) => {
       res.json(result);
     })
@@ -81,6 +85,8 @@ router.put("/comment", requireLogin, (req, res) => {
       new: true,
     }
   )
+    .populate("comments.postedBy", "_id name")
+    .populate("postedBy", "_id name photo")
     .then((result) => {
       res.json(result);
     })
@@ -109,24 +115,14 @@ router.delete("/deletepost/:postId", requireLogin, async (req, res) => {
   }
 });
 
-// router.delete("/deletepost/:postId", requireLogin, (req, res) => {
-//   POST.findOne({ _id: req.params.postId })
-//     .populate("postedBy", "_id")
-//     .exec((err, post) => {
-//       if (err || !post) {
-//         return res.status(400).json({ error: "Post not found" });
-//       }
-//       if (post.postedBy._id.toString() === req.user._id.toString()) {
-//         post
-//           .remove()
-//           .then((result) => {
-//             return res.json({ message: "Post deleted successfully" });
-//           })
-//           .catch((error) => {
-//             return res.status(400).json({ error: error });
-//           });
-//       }
-//     });
-// });
+router.get("/myfollowingpost", requireLogin, (req, res) => {
+  POST.find({ postedBy: { $in: req.user.following } })
+    .populate("postedBy", "_id name")
+    .populate("comments.postedBy", "_id name")
+    .then((Posts) => {
+      res.json(Posts);
+    })
+    .catch((err) => console.error(err));
+});
 
 module.exports = router;

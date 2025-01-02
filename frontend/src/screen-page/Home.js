@@ -9,6 +9,7 @@ import { FaHeart } from "react-icons/fa6";
 import { CgClose } from "react-icons/cg";
 
 const Home = () => {
+  var piclink = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [comment, setComment] = useState("");
@@ -125,13 +126,17 @@ const Home = () => {
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   {/* Profile Picture */}
-                  <div className="w-8 h-8 rounded-full overflow-hidden mt-2">
-                    <img
-                      src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <Link to={`/userprofile/${posts.postedBy._id}`}>
+                    <div className="w-8 h-8 rounded-full overflow-hidden mt-2">
+                      <img
+                        src={
+                          posts.postedBy.photo ? posts.postedBy.photo : piclink
+                        }
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </Link>
                   {/* Username and Location */}
                   <div>
                     <Link
@@ -139,8 +144,10 @@ const Home = () => {
                       className="text-sm font-semibold"
                     >
                       {posts.postedBy.name}
+                      <div className="text-xs text-gray-500 text-left cursor-pointer">
+                        Surat
+                      </div>
                     </Link>
-                    <div className="text-xs text-gray-500 text-left">Surat</div>
                   </div>
                 </div>
                 {/* More Options button */}

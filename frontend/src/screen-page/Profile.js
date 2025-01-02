@@ -12,12 +12,16 @@ import {
 } from "react-icons/io5";
 
 import { Link } from "react-router-dom";
-import PostDetail from "./PostDetail";
+import PostDetail from "../components/PostDetail";
+import ProfilePic from "../components/ProfilePic";
 
 const Profile = () => {
+  var piclink = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
   const [pic, setPic] = useState([]);
   const [show, setShow] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [changePic, setChangePic] = useState(false);
+  const [user, setUser] = useState("");
 
   const toggleDetails = (posts) => {
     if (show) {
@@ -28,16 +32,34 @@ const Profile = () => {
     }
   };
 
+  const changeprofile = () => {
+    if (changePic) {
+      setChangePic(false);
+    } else {
+      setChangePic(true);
+    }
+  };
+
   useEffect(() => {
-    fetch("http://localhost:5000/myposts", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "bearer " + localStorage.getItem("jwt"),
-      },
-    })
+    fetch(
+      `http://localhost:5000/user/${
+        JSON.parse(localStorage.getItem("user"))._id
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "bearer " + localStorage.getItem("jwt"),
+        },
+      }
+    )
       .then((res) => res.json())
-      .then((result) => setPic(result));
+      .then((result) => {
+        console.log(result);
+
+        setPic(result.posts);
+        setUser(result.user);
+      });
   }, []);
 
   return (
@@ -61,25 +83,30 @@ const Profile = () => {
 
         {/* Profile Info */}
         <section className="p-4">
-          <div className="flex items-center justify-between w-full">
-            <div className=" w-1/5 mt-2">
+          <div className="flex items-center gap-4  w-full">
+            <div className="mt-2">
               <img
-                src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
+                onClick={changeprofile}
+                src={user.photo ? user.photo : piclink}
                 alt="Profile"
-                className="w-[80px] h-[80px] object-cover overflow-hidden rounded-full"
+                className="w-[100px] h-[100px] object-cover overflow-hidden rounded-full"
               />
             </div>
-            <div className="w-4/5 flex items-center justify-between text-center ps-6">
+            <div className="gap-14 flex items-center justify-between text-center ps-6">
               <div>
-                <div className="font-semibold">4</div>
+                <div className="font-semibold">{pic ? pic.length : 0}</div>
                 <div className="text-sm text-gray-600">posts</div>
               </div>
               <div>
-                <div className="font-semibold">447</div>
+                <div className="font-semibold">
+                  {user.followers ? user.followers.length : 0}
+                </div>
                 <div className="text-sm text-gray-600">followers</div>
               </div>
               <div>
-                <div className="font-semibold">385</div>
+                <div className="font-semibold">
+                  {user.following ? user.following.length : 0}
+                </div>
                 <div className="text-sm text-gray-600">following</div>
               </div>
             </div>
@@ -98,33 +125,8 @@ const Profile = () => {
             >
               Message
             </button>
-            {/* <button
-              variant="outline"
-              size="icon"
-              className="bg-white border-gray-300 hover:bg-gray-100"
-            >
-              <IoPersonOutline className="h-4 w-4" />
-            </button> */}
           </div>
         </section>
-
-        {/* Stories Highlights */}
-        {/* <section className="p-4 border-b border-gray-200">
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full border border-gray-300 flex items-center justify-center mb-1">
-                <image
-                  src="/placeholder.svg"
-                  alt="Story highlight"
-                  width={56}
-                  height={56}
-                  className="rounded-full"
-                />
-              </div>
-              <span className="text-xs">Navratri 2k24...</span>
-            </div>
-          </div>
-        </section> */}
 
         {/* Gallery Toggle */}
         <div className="flex justify-center border-b border-gray-200">
@@ -135,29 +137,6 @@ const Profile = () => {
             <IoCameraOutline className="h-6 w-6 text-gray-400" />
           </button>
         </div>
-
-        {/* Photo Grid */}
-        {/* <div className="grid grid-cols-2 gap-0.5 bg-gray-100">
-          {[1, 2, 3, 4].map((index) => (
-            <div key={index} className="aspect-square relative">
-              <image
-                src={`https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww`}
-                alt={`Post ${index}`}
-                fill
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div> */}
-        {/* {pic?.map((pic) => {
-          return (
-            <>
-              <div className="grid grid-cols-2 gap-1 bg-gray-100">
-                <img src={pic.photo} />
-              </div>
-            </>
-          );
-        })} */}
 
         <div className="grid grid-cols-3 gap-1 bg-gray-100 ">
           {pic?.map((pic) => {
@@ -190,6 +169,7 @@ const Profile = () => {
         </nav>
       </div>
       {show && <PostDetail items={posts} toggleDetails={toggleDetails} />}
+      {changePic && <ProfilePic changeprofile={changeprofile} />}
     </div>
   );
 };

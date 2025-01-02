@@ -11,13 +11,49 @@ import {
   // IoPersonOutline,
 } from "react-icons/io5";
 import { Link, useParams } from "react-router-dom";
-import PostDetail from "./PostDetail";
 
 const UserProfile = () => {
+  var piclink = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
   const { userid } = useParams();
-
+  const [isFollow, setIsFollow] = useState(false);
   const [user, setUser] = useState("");
   const [posts, setPosts] = useState([]);
+
+  const followUser = (userId) => {
+    fetch("http://localhost:5000/follow", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        followId: userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setIsFollow(true);
+      });
+  };
+
+  const unfollowUser = (userId) => {
+    fetch("http://localhost:5000/unfollow", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        followId: userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setIsFollow(false);
+      });
+  };
 
   useEffect(() => {
     fetch(`http://localhost:5000/user/${userid}`, {
@@ -31,8 +67,15 @@ const UserProfile = () => {
       .then((result) => {
         setUser(result.user);
         setPosts(result.posts);
+        if (
+          result.user.followers.includes(
+            JSON.parse(localStorage.getItem("user"))._id
+          )
+        ) {
+          setIsFollow(true);
+        }
       });
-  }, []);
+  }, [isFollow, userid]);
 
   return (
     <div
@@ -58,7 +101,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-between w-full">
             <div className=" w-1/5 mt-2">
               <img
-                src="https://plus.unsplash.com/premium_photo-1689530775582-83b8abdb5020?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmFuZG9tJTIwcGVyc29ufGVufDB8fDB8fHww"
+                src={user.photo ? user.photo : piclink}
                 alt="Profile"
                 className="w-[80px] h-[80px] object-cover overflow-hidden rounded-full"
               />
@@ -69,11 +112,15 @@ const UserProfile = () => {
                 <div className="text-sm text-gray-600">posts</div>
               </div>
               <div>
-                <div className="font-semibold">447</div>
+                <div className="font-semibold">
+                  {user.followers ? user.followers.length : 0}
+                </div>
                 <div className="text-sm text-gray-600">followers</div>
               </div>
               <div>
-                <div className="font-semibold">385</div>
+                <div className="font-semibold">
+                  {user.following ? user.following.length : 0}
+                </div>
                 <div className="text-sm text-gray-600">following</div>
               </div>
             </div>
@@ -81,10 +128,17 @@ const UserProfile = () => {
 
           <div className="mt-6 flex gap-2">
             <button
+              onClick={() => {
+                if (isFollow) {
+                  unfollowUser(user._id);
+                } else {
+                  followUser(user._id);
+                }
+              }}
               variant="outline"
               className="flex-1 rounded-lg bg-white text-gray-900 p-1 border border-gray-300 hover:bg-gray-100"
             >
-              Following
+              {isFollow ? "Following" : "Follow"}
             </button>
             <button
               variant="outline"

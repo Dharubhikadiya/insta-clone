@@ -2,16 +2,17 @@ import React, { createContext, useState } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
-import SignUp from "./components/SignUp";
-import SignIn from "./components/SignIn";
-import Profile from "./components/Profile";
+import Home from "./screen-page/Home";
+import SignUp from "./screen-page/SignUp";
+import SignIn from "./screen-page/SignIn";
+import Profile from "./screen-page/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CreatePost from "./components/CreatePost";
+import CreatePost from "./screen-page/CreatePost";
 import { LoginContext } from "./context/Logincontext";
 import Modal from "./components/Modal";
 import UserProfile from "./components/UserProfile";
+import MyFollowingPost from "./screen-page/MyFollowingPost";
 
 function App() {
   const [userLogin, setUserLogin] = useState(false);
@@ -29,6 +30,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/createpost" element={<CreatePost />} />
             <Route path="/userprofile/:userid" element={<UserProfile />} />
+            <Route path="/myfollowingpost" element={<MyFollowingPost />} />
           </Routes>
 
           <ToastContainer />
