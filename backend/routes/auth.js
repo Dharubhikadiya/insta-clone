@@ -6,10 +6,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const requireLogin = require("../middlewares/requireLogin");
 
-// router.get("/", (req, res) => {
-//   res.send("hello");
-// });
-
 router.post("/signup", async (req, res) => {
   const { name, username, email, password } = req.body;
 
@@ -59,10 +55,6 @@ router.post("/signin", async (req, res) => {
           const token = jwt.sign({ _id: savedUser.id }, process.env.JWT_SECRET);
           const { _id, name, email, username } = savedUser;
           res.json({ token, user: { _id, name, email, username } });
-
-          // return res
-          //   .status(200)
-          //   .json({ message: "Signed in successfully", token });
         } else {
           return res.status(400).json({ error: "Invalid Password" });
         }

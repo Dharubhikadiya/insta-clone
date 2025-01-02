@@ -25,7 +25,7 @@
 //   };
 
 //   const likepost = (id) => {
-//     fetch("http://localhost:5000/like", {
+//     fetch("/like", {
 //       method: "put",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -47,7 +47,7 @@
 //   };
 
 //   const unlikepost = (id) => {
-//     fetch("http://localhost:5000/unlike", {
+//     fetch("/unlike", {
 //       method: "PUT",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -70,7 +70,7 @@
 //   };
 
 //   const makecomment = (text, id) => {
-//     fetch("http://localhost:5000/comment", {
+//     fetch("/comment", {
 //       method: "PUT",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -101,7 +101,7 @@
 //     if (!token) {
 //       navigate("/signup");
 //     }
-//     fetch("http://localhost:5000/myfollowingpost", {
+//     fetch("/myfollowingpost", {
 //       method: "GET",
 //       headers: {
 //         Authorization: "bearer " + localStorage.getItem("jwt"),
@@ -372,7 +372,7 @@ const MyFollowingPost = () => {
   };
 
   const likepost = (id) => {
-    fetch("http://localhost:5000/like", {
+    fetch("/like", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -394,7 +394,7 @@ const MyFollowingPost = () => {
   };
 
   const unlikepost = (id) => {
-    fetch("http://localhost:5000/unlike", {
+    fetch("/unlike", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -417,7 +417,7 @@ const MyFollowingPost = () => {
   };
 
   const makecomment = (text, id) => {
-    fetch("http://localhost:5000/comment", {
+    fetch("/comment", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -448,7 +448,7 @@ const MyFollowingPost = () => {
     if (!token) {
       navigate("/signup");
     }
-    fetch("http://localhost:5000/myfollowingpost", {
+    fetch("/myfollowingpost", {
       method: "GET",
       headers: {
         Authorization: "bearer " + localStorage.getItem("jwt"),

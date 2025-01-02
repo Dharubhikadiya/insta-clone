@@ -26,7 +26,7 @@ const Home = () => {
   };
 
   const likepost = (id) => {
-    fetch("http://localhost:5000/like", {
+    fetch("/like", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const Home = () => {
   };
 
   const unlikepost = (id) => {
-    fetch("http://localhost:5000/unlike", {
+    fetch("/unlike", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const Home = () => {
   };
 
   const makecomment = (text, id) => {
-    fetch("http://localhost:5000/comment", {
+    fetch("/comment", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +102,7 @@ const Home = () => {
     if (!token) {
       navigate("/signup");
     }
-    fetch("http://localhost:5000/allposts", {
+    fetch("/allposts", {
       method: "GET",
       headers: {
         Authorization: "bearer " + localStorage.getItem("jwt"),
