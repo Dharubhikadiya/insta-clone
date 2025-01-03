@@ -14,7 +14,7 @@ const PostDetail = ({ items, toggleDetails }) => {
 
   const removepost = (postId) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
-      fetch(`/deletepost/${postId}`, {
+      fetch(`http://localhost:5000/deletepost/${postId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

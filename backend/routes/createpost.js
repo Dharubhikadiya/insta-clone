@@ -5,9 +5,13 @@ const requireLogin = require("../middlewares/requireLogin");
 const POST = mongoose.model("POST");
 
 router.get("/allposts", requireLogin, (req, res) => {
+  let limit = req.query.limit;
+  let skip = req.query.skip;
   POST.find()
     .populate("postedBy", "_id name photo")
     .populate("comments.postedBy", "_id name")
+    .skip(skip ? parseInt(skip) : 0)
+    .limit(limit ? parseInt(limit) : 10)
     .sort("-createdAt")
     .then((posts) => {
       res.json(posts);

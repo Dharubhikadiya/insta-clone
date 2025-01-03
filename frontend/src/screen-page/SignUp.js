@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../img/logo.png";
+import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import { LoginContext } from "../context/Logincontext";
 
 const SignUp = () => {
+  const { setUserLogin } = useContext(LoginContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -51,7 +55,7 @@ const SignUp = () => {
       return;
     }
 
-    fetch("/signup", {
+    fetch("http://localhost:5000/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,6 +74,40 @@ const SignUp = () => {
         } else {
           notifyB(data.message);
           navigate("/signin");
+        }
+      })
+      .catch((err) => console.error("Error:", err));
+  };
+
+  const continueWithGoogle = (credentialResponse) => {
+    console.log(credentialResponse);
+    const jwtDetail = jwtDecode(credentialResponse.credential);
+    console.log(jwtDetail);
+    fetch("http://localhost:5000/googleLogin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: jwtDetail.name,
+        email: jwtDetail.email,
+        username: jwtDetail.username,
+        email_verified: jwtDetail.email_verified,
+        clientId: credentialResponse.clientId,
+        photo: jwtDetail.picture,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          notifyA(data.error);
+        } else {
+          notifyB("Signed in Successfully");
+          console.log(data);
+          localStorage.setItem("jwt", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          setUserLogin(true);
+          navigate("/");
         }
       })
       .catch((err) => console.error("Error:", err));
@@ -111,7 +149,6 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
             <div>
               <div className="flex items-center justify-between">
                 <label
@@ -139,7 +176,6 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
             <div>
               <div className="flex items-center justify-between">
                 <label
@@ -162,7 +198,6 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
             <div>
               <div className="flex items-center justify-between">
                 <label
@@ -185,12 +220,10 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
             <p className="mt-4 text-center text-sm text-gray-500">
               By signing up, you agree to our Terms , Privacy Policy and Cookies
               Policy .
             </p>
-
             <div>
               <button
                 onClick={() => handlesubmit()}
@@ -200,6 +233,15 @@ const SignUp = () => {
                 Sign up
               </button>
             </div>
+            <hr />
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                continueWithGoogle(credentialResponse);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
 
             <p className="text-center text-md text-black">
               Have an account?{" "}

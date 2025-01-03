@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { FaRegHeart } from "react-icons/fa6";
+import React, { useEffect, useState, useContext } from "react";
+import { FaRegCircleUser, FaRegHeart } from "react-icons/fa6";
 import { FaRegComment, FaSmile } from "react-icons/fa";
 import { LuMessageCircle, LuSend } from "react-icons/lu";
 import { BsSave } from "react-icons/bs";
@@ -7,6 +7,15 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa6";
 import { CgClose } from "react-icons/cg";
+import { LuLogOut } from "react-icons/lu";
+import { AiOutlinePlus } from "react-icons/ai";
+import { LoginContext } from "../context/Logincontext";
+import {
+  IoAddOutline,
+  IoHomeOutline,
+  IoSearchOutline,
+  IoVideocamOutline,
+} from "react-icons/io5";
 
 const Home = () => {
   var piclink = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
@@ -15,6 +24,10 @@ const Home = () => {
   const [comment, setComment] = useState("");
   const [commentbox, setCommentbox] = useState(false);
   const [items, setItems] = useState("");
+  let limit = 10;
+  let skip = 0;
+
+  const { setmodalOpen } = useContext(LoginContext);
 
   const togglecomment = (posts) => {
     if (commentbox) {
@@ -26,7 +39,7 @@ const Home = () => {
   };
 
   const likepost = (id) => {
-    fetch("/like", {
+    fetch("http://localhost:5000/like", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +61,7 @@ const Home = () => {
   };
 
   const unlikepost = (id) => {
-    fetch("/unlike", {
+    fetch("http://localhost:5000/unlike", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +84,7 @@ const Home = () => {
   };
 
   const makecomment = (text, id) => {
-    fetch("/comment", {
+    fetch("http://localhost:5000/comment", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -102,153 +115,185 @@ const Home = () => {
     if (!token) {
       navigate("/signup");
     }
-    fetch("/allposts", {
+    fetchpost();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [navigate]);
+
+  const fetchpost = () => {
+    fetch(`http://localhost:5000/allposts?limit=${limit}&skip=${skip}`, {
       method: "GET",
       headers: {
         Authorization: "bearer " + localStorage.getItem("jwt"),
       },
     })
       .then((res) => res.json())
-      .then((result) => setData(result))
+      .then((result) => setData((data) => [...data, ...result]))
       .catch((err) => console.log(err));
-  }, [navigate]);
+  };
+
+  const handleScroll = () => {
+    if (
+      document.documentElement.clientHeight + window.pageYOffset >=
+      document.documentElement.scrollHeight
+    ) {
+      skip = skip + 10;
+      fetchpost();
+    }
+  };
 
   return (
     <div>
       <div className="flex bg-gray-100 flex-col items-center justify-center p-4 py-2">
-        {data?.map((posts) => {
-          return (
-            <div
-              key={posts._id}
-              className="bg-white max-w-[460px] w-full rounded shadow-inner m-1"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-3">
-                <div className="flex items-center gap-3">
-                  {/* Profile Picture */}
-                  <Link to={`/userprofile/${posts.postedBy._id}`}>
-                    <div className="w-8 h-8 rounded-full overflow-hidden mt-2">
-                      <img
-                        src={
-                          posts.postedBy.photo ? posts.postedBy.photo : piclink
-                        }
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </Link>
-                  {/* Username and Location */}
-                  <div>
-                    <Link
-                      to={`/userprofile/${posts.postedBy._id}`}
-                      className="text-sm font-semibold"
-                    >
-                      {posts.postedBy.name}
-                      <div className="text-xs text-gray-500 text-left cursor-pointer">
-                        Surat
+        <div className="max-w-[460px] w-full">
+          {data?.map((posts) => {
+            return (
+              <div className="bg-white max-w-[460px] w-full rounded shadow-inner">
+                {" "}
+                {/* Header */}
+                <div
+                  key={posts._id}
+                  className="flex items-center justify-between p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Profile Picture */}
+                    <Link to={`/userprofile/${posts.postedBy._id}`}>
+                      <div className="w-8 h-8 rounded-full overflow-hidden mt-2">
+                        <img
+                          src={
+                            posts.postedBy.photo
+                              ? posts.postedBy.photo
+                              : piclink
+                          }
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </Link>
-                  </div>
-                </div>
-                {/* More Options button */}
-                <button className="p-2 text-2xl">
-                  <HiOutlineDotsHorizontal />
-                </button>
-              </div>
-
-              {/* Main Image */}
-              <div className="relative w-full aspect-[3/2]">
-                <img
-                  src={posts.photo}
-                  alt="A person wearing a pink blouse and floral saree with braided hairstyle"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Action buttons */}
-              <div className="p-3 my-2">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-5 items-center justify-center">
-                    {/* Like button */}
-                    {posts.likes.includes(
-                      JSON.parse(localStorage.getItem("user"))._id
-                    ) ? (
-                      <button
-                        onClick={() => unlikepost(posts._id)}
-                        className="text-2xl text-red-500"
+                    {/* Username and Location */}
+                    <div>
+                      <Link
+                        to={`/userprofile/${posts.postedBy._id}`}
+                        className="text-sm font-semibold"
                       >
-                        <FaHeart />
-                      </button>
-                    ) : (
+                        {posts.postedBy.name}
+                        <div className="text-xs text-gray-500 text-left cursor-pointer">
+                          Surat
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                  {/* More Options button */}
+                  <button className="p-2 text-2xl">
+                    <HiOutlineDotsHorizontal />
+                  </button>
+                </div>
+                {/* Main Image */}
+                <div className="relative w-full aspect-[3/2]">
+                  <img
+                    src={posts.photo}
+                    alt="A person wearing a pink blouse and floral saree with braided hairstyle"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Action buttons */}
+                <div className="p-3 my-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-5 items-center justify-center">
+                      {/* Like button */}
+                      {posts.likes.includes(
+                        JSON.parse(localStorage.getItem("user"))._id
+                      ) ? (
+                        <button
+                          onClick={() => unlikepost(posts._id)}
+                          className="text-2xl text-red-500"
+                        >
+                          <FaHeart />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => likepost(posts._id)}
+                          className="text-2xl text-dark"
+                        >
+                          <FaRegHeart />
+                        </button>
+                      )}
+
+                      {/* Comment button */}
                       <button
-                        onClick={() => likepost(posts._id)}
+                        onClick={() => togglecomment(posts)}
                         className="text-2xl text-dark"
                       >
-                        <FaRegHeart />
+                        <FaRegComment />
                       </button>
-                    )}
-
-                    {/* Comment button */}
-                    <button
-                      onClick={() => togglecomment(posts)}
-                      className="text-2xl text-dark"
-                    >
-                      <FaRegComment />
-                    </button>
-                    {/* Share button */}
-                    <button className="text-2xl text-dark">
-                      <LuSend />
+                      {/* Share button */}
+                      <button className="text-2xl text-dark">
+                        <LuSend />
+                      </button>
+                    </div>
+                    {/* Save button */}
+                    <button className="text-xl text-dark">
+                      <BsSave />
                     </button>
                   </div>
-                  {/* Save button */}
-                  <button className="text-xl text-dark">
-                    <BsSave />
-                  </button>
-                </div>
 
-                {/* Likes Count */}
-                <div className="mt-3 pe-2">
-                  <p className="font-semibold text-sm text-left">
-                    {posts.likes.length} Likes
-                  </p>
-                </div>
+                  {/* Likes Count */}
+                  <div className="mt-3 pe-2">
+                    <p className="font-semibold text-sm text-left">
+                      {posts.likes.length} Likes
+                    </p>
+                  </div>
 
-                {/* Caption */}
-                <div className="mt-1">
-                  <p className="text-sm p-0 m-0 text-left">{posts.body}</p>
-                </div>
+                  {/* Caption */}
+                  <div className="mt-1">
+                    <p className="text-sm p-0 m-0 text-left">{posts.body}</p>
+                  </div>
 
-                {/* All Comment */}
-                <div className="mt-1">
-                  <p
-                    onClick={() => togglecomment(posts)}
-                    className="text-md font-semibold p-0 m-0 text-left cursor-pointer"
-                  >
-                    View all comments
-                  </p>
-                </div>
+                  {/* All Comment */}
+                  <div className="mt-1">
+                    <p
+                      onClick={() => togglecomment(posts)}
+                      className="text-md font-semibold p-0 m-0 text-left cursor-pointer"
+                    >
+                      View all comments
+                    </p>
+                  </div>
 
-                {/* comment section */}
-                <div className="mt-4 mb-2 relative">
-                  <div className="absolute top-1.5 left-2 text-xl">☺️</div>
-                  <input
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    type="text"
-                    placeholder="Add a comment"
-                    className="border w-full p-2 rounded-xl ps-12"
-                  ></input>
-                  <button
-                    onClick={() => makecomment(comment, posts._id)}
-                    className="absolute right-3 top-2 font-semibold"
-                  >
-                    Post
-                  </button>
+                  {/* comment section */}
+                  <div className="mt-4 mb-2 relative">
+                    <div className="absolute top-1.5 left-2 text-xl">☺️</div>
+                    <input
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      type="text"
+                      placeholder="Add a comment"
+                      className="border w-full p-2 rounded-xl ps-12"
+                    ></input>
+                    <button
+                      onClick={() => makecomment(comment, posts._id)}
+                      className="absolute right-3 top-2 font-semibold"
+                    >
+                      Post
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+          <nav className="z-10 sticky bottom-0  flex justify-between p-4 bg-white border-t border-gray-200">
+            <Link to="/">
+              <IoHomeOutline className="h-6 w-6" />
+            </Link>
+            <IoSearchOutline className="h-6 w-6" />
+            <Link to="/createpost">
+              <AiOutlinePlus className="h-6 w-6" />
+            </Link>
+            <LuLogOut className="h-6 w-6" onClick={() => setmodalOpen(true)} />
+            <Link to="/profile">
+              <FaRegCircleUser className="h-6 w-6" />
+            </Link>
+          </nav>
+        </div>
       </div>
 
       {commentbox && (

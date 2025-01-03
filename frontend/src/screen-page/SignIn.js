@@ -34,7 +34,7 @@ const SignIn = () => {
       return;
     }
 
-    fetch("/signin", {
+    fetch("http://localhost:5000/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,6 @@ const SignIn = () => {
           setUserLogin(true);
           navigate("/");
         }
-        console.log(data);
       })
       .catch((err) => console.error("Error:", err));
   };

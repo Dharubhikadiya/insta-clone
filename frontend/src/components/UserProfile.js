@@ -10,38 +10,53 @@ import {
   IoEllipsisVerticalOutline,
   // IoPersonOutline,
 } from "react-icons/io5";
+import { Link, useParams } from "react-router-dom";
 
-import { Link } from "react-router-dom";
-import PostDetail from "../components/PostDetail";
-import ProfilePic from "../components/ProfilePic";
-
-const Profile = () => {
+const UserProfile = () => {
   var piclink = "https://cdn-icons-png.flaticon.com/128/847/847969.png";
-  const [pic, setPic] = useState([]);
-  const [show, setShow] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [changePic, setChangePic] = useState(false);
+  const { userid } = useParams();
+  const [isFollow, setIsFollow] = useState(false);
   const [user, setUser] = useState("");
+  const [posts, setPosts] = useState([]);
 
-  const toggleDetails = (posts) => {
-    if (show) {
-      setShow(false);
-    } else {
-      setShow(true);
-      setPosts(posts);
-    }
+  const followUser = (userId) => {
+    fetch("http://localhost:5000/follow", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        followId: userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setIsFollow(true);
+      });
   };
 
-  const changeprofile = () => {
-    if (changePic) {
-      setChangePic(false);
-    } else {
-      setChangePic(true);
-    }
+  const unfollowUser = (userId) => {
+    fetch("http://localhost:5000/unfollow", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        followId: userId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setIsFollow(false);
+      });
   };
 
   useEffect(() => {
-    fetch(`/user/${JSON.parse(localStorage.getItem("user"))._id}`, {
+    fetch(`http://localhost:5000/user/${userid}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -50,12 +65,17 @@ const Profile = () => {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
-
-        setPic(result.posts);
         setUser(result.user);
+        setPosts(result.posts);
+        if (
+          result.user.followers.includes(
+            JSON.parse(localStorage.getItem("user"))._id
+          )
+        ) {
+          setIsFollow(true);
+        }
       });
-  }, []);
+  }, [isFollow, userid]);
 
   return (
     <div
@@ -67,7 +87,7 @@ const Profile = () => {
         <header className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <Link href="/" className="text-xl font-semibold">
-              {JSON.parse(localStorage.getItem("user")).name}
+              {user.name}
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -78,18 +98,17 @@ const Profile = () => {
 
         {/* Profile Info */}
         <section className="p-4">
-          <div className="flex items-center gap-4  w-full">
-            <div className="mt-2">
+          <div className="flex items-center justify-between w-full">
+            <div className=" w-1/5 mt-2">
               <img
-                onClick={changeprofile}
                 src={user.photo ? user.photo : piclink}
                 alt="Profile"
-                className="w-[100px] h-[100px] object-cover overflow-hidden rounded-full"
+                className="w-[80px] h-[80px] object-cover overflow-hidden rounded-full"
               />
             </div>
-            <div className="gap-14 flex items-center justify-between text-center ps-6">
+            <div className="w-4/5 flex items-center justify-between text-center ps-6">
               <div>
-                <div className="font-semibold">{pic ? pic.length : 0}</div>
+                <div className="font-semibold">{posts.length}</div>
                 <div className="text-sm text-gray-600">posts</div>
               </div>
               <div>
@@ -109,10 +128,17 @@ const Profile = () => {
 
           <div className="mt-6 flex gap-2">
             <button
+              onClick={() => {
+                if (isFollow) {
+                  unfollowUser(user._id);
+                } else {
+                  followUser(user._id);
+                }
+              }}
               variant="outline"
               className="flex-1 rounded-lg bg-white text-gray-900 p-1 border border-gray-300 hover:bg-gray-100"
             >
-              Following
+              {isFollow ? "Following" : "Follow"}
             </button>
             <button
               variant="outline"
@@ -134,13 +160,13 @@ const Profile = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-1 bg-gray-100 ">
-          {pic?.map((pic) => {
+          {posts?.map((pic) => {
             return (
               <>
                 <img
-                  onClick={() => toggleDetails(pic)}
-                  key={pic._id}
-                  src={pic.photo}
+                  //   onClick={() => toggleDetails(pic)}
+                  key={pic?._id}
+                  src={pic?.photo}
                   className="w-full h-40 object-cover"
                 />
               </>
@@ -163,10 +189,9 @@ const Profile = () => {
           />
         </nav>
       </div>
-      {show && <PostDetail items={posts} toggleDetails={toggleDetails} />}
-      {changePic && <ProfilePic changeprofile={changeprofile} />}
+      {/* {show && <PostDetail items={posts} toggleDetails={toggleDetails} />} */}
     </div>
   );
 };
 
-export default Profile;
+export default UserProfile;

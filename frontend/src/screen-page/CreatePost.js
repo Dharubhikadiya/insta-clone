@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { FaRegCircleUser } from "react-icons/fa6";
+import { IoAddOutline, IoHomeOutline, IoSearchOutline } from "react-icons/io5";
+import { LuLogOut } from "react-icons/lu";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { LoginContext } from "../context/Logincontext";
+import { AiOutlinePlus } from "react-icons/ai";
 
 const CreatePost = () => {
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
+
+  const { setmodalOpen } = useContext(LoginContext);
 
   const navigate = useNavigate();
 
@@ -38,7 +45,7 @@ const CreatePost = () => {
 
   useEffect(() => {
     if (url) {
-      fetch("/createpost", {
+      fetch("http://localhost:5000/createpost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,6 +124,20 @@ const CreatePost = () => {
             className="border p-4 w-full mx-auto"
           />
         </div>
+        <nav className="z-10 sticky bottom-0  flex justify-between p-4 bg-white border-t border-gray-200">
+          <Link to="/">
+            <IoHomeOutline className="h-6 w-6" />
+          </Link>
+          <IoSearchOutline className="h-6 w-6" />
+          <Link to="/createpost">
+            <AiOutlinePlus className="h-6 w-6" />
+          </Link>
+
+          <LuLogOut className="h-6 w-6" onClick={() => setmodalOpen(true)} />
+          <Link to="/profile">
+            <FaRegCircleUser className="h-6 w-6" />
+          </Link>
+        </nav>
       </div>
     </div>
   );
