@@ -280,7 +280,7 @@ const Home = () => {
               </div>
             );
           })}
-          <nav className="z-10 sticky bottom-0  flex justify-between p-4 bg-white border-t border-gray-200">
+          <nav className="z-5 sticky bottom-0  flex justify-between p-4 bg-white border-t border-gray-200">
             <Link to="/">
               <IoHomeOutline className="h-6 w-6" />
             </Link>
@@ -353,7 +353,7 @@ const Home = () => {
 
               {/* Emoji Bar and Comment Input */}
               <div className="border-t bg-white fixed bottom-0 left-0 right-0 md:relative">
-                <div className="flex gap-2 px-4 justify-between">
+                <div className="flex gap-2 px-4 justify-between pt-4">
                   <button className="hover:bg-gray-100 p-2 rounded-full">
                     <span className="text-xl">❤️</span>
                   </button>
@@ -368,21 +368,6 @@ const Home = () => {
                   </button>
                   <button className="hover:bg-gray-100 p-2 rounded-full">
                     <span className="text-xl">🤣</span>
-                  </button>
-                </div>
-                <div className="flex items-center gap-2 px-4 pb-3">
-                  <div className="flex-1 flex items-center gap-2 border rounded-full px-3 py-1.5">
-                    <input
-                      type="text"
-                      placeholder="Add a comment..."
-                      className="flex-1 text-sm border-none focus:outline-none"
-                    />
-                    <button>
-                      <FaSmile className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-                  <button>
-                    <LuMessageCircle className="w-5 h-5" />
                   </button>
                 </div>
               </div>

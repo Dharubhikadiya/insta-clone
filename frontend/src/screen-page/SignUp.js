@@ -235,6 +235,7 @@ const SignUp = () => {
             </div>
             <hr />
             <GoogleLogin
+              className="w-full"
               onSuccess={(credentialResponse) => {
                 continueWithGoogle(credentialResponse);
               }}

@@ -6,7 +6,7 @@ import { HiMiniBars3BottomRight } from "react-icons/hi2";
 
 export default function Navbar({ login }) {
   const { setmodalOpen } = useContext(LoginContext);
-  const [isOpen, setIsOpen] = useState(false); // Toggle state
+  const [isOpen, setIsOpen] = useState(false);
 
   const loginstatus = () => {
     const token = localStorage.getItem("jwt");
