@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 const cors = require("cors");
 const connectToDb = require("./db");
 const bcrypt = require("bcrypt");
@@ -22,5 +22,5 @@ app.use(require("./routes/auth"));
 app.use(require("./routes/createpost"));
 app.use(require("./routes/user"));
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log(`Server running on port ${PORT}`);
 });
